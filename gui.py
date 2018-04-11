@@ -31,3 +31,7 @@ def exclude_paper():
 @app.route("/discuss", methods=["POST"])
 def discuss_paper():
     return process_choice('discuss', request.form['paper_id'])
+
+@app.route("/freeform", methods=["POST"])
+def freeform_action():
+    return process_choice(request.form['freeform'], request.form['paper_id'])
