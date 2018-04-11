@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+  <head>
+    <title>
+      Paper Reviewer
+    </title>
+
+    <style>
+      #title {
+        font-weight: bold;
+      }
+
+      #abstract {
+        width: 40em;
+      }
+    </style>
+
+    <script type="text/javascript">
+      document.addEventListener('keypress', (event) => {
+        if (event.key == 'i') {
+          document.getElementById('include').click()
+        }
+        if (event.key == 'e') {
+          document.getElementById('exclude').click()
+        }
+        if (event.key == 'd') {
+          document.getElementById('discuss').click()
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <p id="title">
+    {{data['Document Title']}}
+    </p>
+    <p id="abstract">
+    {{data['Abstract']}}
+    </p>
+
+    <form method="post">
+      <input type="hidden" name="paper_id" value="{{paper_id}}">
+      <button id="include" formaction="/include">Include</button>
+      <button id="exclude" formaction="/exclude">Exclude</button>
+      <button id="discuss" formaction="/discuss">Discuss</button>
+    </form>
+  </body>
+</html>
+
