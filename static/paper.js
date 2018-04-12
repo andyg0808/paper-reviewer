@@ -1,3 +1,9 @@
+function highlight_string(string) {
+  abstract = document.getElementById('abstract')
+  text = abstract.innerHTML
+  abstract.innerHTML = text.replace(string, m => `<span class="highlight">${m}</span>`)
+}
+
 $(() => {
   document.addEventListener('keypress', (event) => {
     if (event.key == 'i') {
@@ -25,5 +31,7 @@ $(() => {
       event.preventDefault()
     }
   })
+
+  highlight_string('effort')
 })
 
