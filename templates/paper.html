@@ -12,20 +12,7 @@
       Paper Reviewer
     </title>
 
-    <style>
-      #title {
-        font-weight: bold;
-        font-family: 'Lato', sans-serif;
-      }
-
-      #abstract {
-        font-family: 'Merriweather', serif;
-      }
-
-      body {
-        margin-top: 1em;
-      }
-    </style>
+    <link rel="stylesheet" href="/static/style.css">
 
   </head>
   <body>
@@ -94,36 +81,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
 
-    <script type="text/javascript">
-      $(() => {
-        document.addEventListener('keypress', (event) => {
-          if (event.key == 'i') {
-            document.getElementById('include').click()
-          }
-          if (event.key == 'e') {
-            document.getElementById('exclude').click()
-          }
-          if (event.key == 'd') {
-            document.getElementById('discuss').click()
-          }
-          if (event.key == 'f') {
-            document.getElementById('freeform-text').focus()
-          }
-        })
-
-        freeform_text = document.getElementById('freeform-text')
-        freeform_text.addEventListener('keypress', (event) => {
-          event.stopPropagation()
-        })
-
-        freeform_text.addEventListener('keydown', (event) => {
-          if (event.key == 'Enter') {
-            document.getElementById('freeform').click()
-            event.preventDefault()
-          }
-        })
-      })
-    </script>
+    <script src="/static/paper.js"></script>
   </body>
 </html>
 
