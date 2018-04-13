@@ -3,12 +3,16 @@
 <div class="row">
   <div class="col-sm" >
     <p id="title">
-    {{data['Document Title']}}
+    {{data['title']}}
     </p>
-    <p id="abstract">
-    {{data['Abstract']}}
+    <iframe src="{{data['url']}}">
+    </iframe>
+    <p>
+    <a target="_blank" href="{{data['url']}}">Go to the page</a>
     </p>
   </div>
+</div>
+<div class="row">
   <div class="col-sm">
     <strong>Research Questions</strong>
     <ul>

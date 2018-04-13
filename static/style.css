@@ -11,3 +11,7 @@ body {
   margin-top: 1em;
 }
 
+iframe {
+  width: 960px;
+  height: 15em;
+}
