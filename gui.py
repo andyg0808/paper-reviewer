@@ -97,10 +97,16 @@ def get_next_paper(paper_id):
     elif action == 'unify':
         return mapping[mapping['unify']].iloc[paper_id:].iloc[0]['paper_id']
 
+def get_doi(library, paper_id):
+    if library == 'ieee':
+        return data[library].iloc[paper_id]['DOI']
+
 def process_choice(action, paper_id):
     csvfile, output = get_output(get_library())
     print(action + "ed " + paper_id)
-    output.writerow([paper_id, action])
+    library = get_library()
+    doi = get_doi(library, paper_id)
+    output.writerow([paper_id, action, doi])
     csvfile.flush()
     next_paper = str(int(request.form['paper_id'])+1)
     return redirect("/" + str(next_paper))
