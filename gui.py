@@ -57,10 +57,10 @@ def select_library():
 @app.route("/library/<libname>")
 def set_library(libname):
     if libname == 'ieee':
-        resp = make_response("Library set to IEEE")
+        resp = make_response(redirect('/0'))
         resp.set_cookie('library', 'ieee')
     elif libname == 'acm':
-        resp = make_response("Library set to ACM")
+        resp = make_response(redirect('/0'))
         resp.set_cookie('library', 'acm')
     return resp
 

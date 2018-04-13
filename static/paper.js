@@ -39,7 +39,7 @@ $(() => {
 
   highlight_string('software', 'fuchsia')
   highlight_string('effort', 'yellow')
-  highlight_string('estimation', 'chartreuse')
+  highlight_string('estimat\\w+', 'chartreuse')
   highlight_string('poker', 'blueviolet')
   highlight_string('survey|mapping\\s+study|review', 'red')
 })
