@@ -14,14 +14,9 @@ mapping['paper_id'] = mapping.index
 output = pd.read_csv('output.csv')
 output = output.groupby('paper_id').last()
 mapping['G'] = output['action']
-def run_unify(thing):
-    v,g,a = thing[['V', 'G', 'A']]
-    return v!=g or v!=a or g!=a
-mapping['unify'] = mapping.apply(run_unify, axis=1)
-def run_review(thing):
-    v,g,a = thing[['V', 'G', 'A']]
-    return v!=a or g!=a
-mapping['review'] = mapping.apply(run_review, axis=1)
+
+unifies = mapping.query('V!=G | V!=A | G!=A | V=="discuss"')
+reviews = mapping.query('V!=A & V==G & V!="discuss"')
 
 
 output_files = {
@@ -71,14 +66,15 @@ def set_library(libname):
 
 @app.route('/<int:paper_id>')
 def show_paper(paper_id):
-    paper_id = get_next_paper(paper_id)
+    paper_idx = get_paper_idx(paper_id)
     key = get_library()
     template = get_template(key)
     print(template)
-    res = data[key].iloc[paper_id]
-    current_choices = mapping[['V', 'G', 'A']].iloc[paper_id]
+    res = data[key].iloc[paper_idx]
+    current_choices = mapping[['V', 'G', 'A']].iloc[paper_idx]
     return render_template(template, 
             paper_id=paper_id, 
+            paper_idx=paper_idx,
             data=res, 
             choices=current_choices,
             v_style=style_choice(current_choices['V']),
@@ -87,41 +83,42 @@ def show_paper(paper_id):
             action=request.cookies.get('action', 'filter')
             )
 
-def get_next_paper(paper_id):
+def get_paper_idx(paper_id):
     action = request.cookies.get('action', 'filter')
     if action == 'filter':
         return paper_id
     elif action == 'review':
-        return mapping[mapping['review']].iloc[paper_id:].iloc[0]['paper_id']
+        return reviews.iloc[paper_id]['paper_id']
     elif action == 'unify':
-        return mapping[mapping['unify']].iloc[paper_id:].iloc[0]['paper_id']
+        return unifies.iloc[paper_id]['paper_id']
 
 def get_doi(library, paper_id):
     if library == 'ieee':
         return data[library].iloc[paper_id]['DOI']
 
-def process_choice(action, paper_id):
+def process_choice(action):
+    paper_idx = request.form['paper_idx']
     csvfile, output = get_output(get_library())
-    print(action + "ed " + paper_id)
+    print(action + "ed " + paper_idx)
     library = get_library()
-    doi = get_doi(library, int(paper_id))
-    output.writerow([paper_id, action, doi])
+    doi = get_doi(library, int(paper_idx))
+    output.writerow([paper_idx, action, doi])
     csvfile.flush()
     next_paper = str(int(request.form['paper_id'])+1)
     return redirect("/" + str(next_paper))
 
 @app.route("/include", methods=["POST"])
 def include_paper():
-    return process_choice('include', request.form['paper_id'])
+    return process_choice('include')
 
 @app.route("/exclude", methods=["POST"])
 def exclude_paper():
-    return process_choice('exclude', request.form['paper_id'])
+    return process_choice('exclude')
 
 @app.route("/discuss", methods=["POST"])
 def discuss_paper():
-    return process_choice('discuss', request.form['paper_id'])
+    return process_choice('discuss')
 
 @app.route("/freeform", methods=["POST"])
 def freeform_action():
-    return process_choice(request.form['freeform'], request.form['paper_id'])
+    return process_choice(request.form['freeform'])
