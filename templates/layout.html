@@ -17,25 +17,45 @@
   </head>
   <body>
     <div class="container">
-        {% block document %}
-        {% endblock %}
-
+      {% block document %}
+      {% endblock %}
 
       <div class="row">
-        <form method="post">
-          <input type="hidden" name="paper_id" value="{{paper_id}}">
-          <div class="form-group">
-            <button class="btn btn-outline-success" title="Shortcut key: i" id="include" formaction="/include">Include</button>
-            <button class="btn btn-outline-danger" title="Shortcut key: e" id="exclude" formaction="/exclude">Exclude</button>
-            <button class="btn btn-outline-info" title="Shortcut key: d" id="discuss" formaction="/discuss">Discuss</button>
-          </div>
-          <div class="input-group">
-            <input type="text" class="form-control" name="freeform" id="freeform-text">
-            <div class="input-group-append">
-              <button class="btn btn-outline-secondary" title="Shortcut key: f" id="freeform" formaction="/freeform">Freeform</button>
+        <div class="col-sm">
+          <form method="post">
+            <input type="hidden" name="paper_id" value="{{paper_id}}">
+            <div class="form-group">
+              <button class="btn btn-outline-success" title="Shortcut key: i" id="include" formaction="/include">Include</button>
+              <button class="btn btn-outline-danger" title="Shortcut key: e" id="exclude" formaction="/exclude">Exclude</button>
+              <button class="btn btn-outline-info" title="Shortcut key: d" id="discuss" formaction="/discuss">Discuss</button>
             </div>
-          </div>
-        </form>
+            <div class="input-group">
+              <input type="text" class="form-control" name="freeform" id="freeform-text">
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary" title="Shortcut key: f" id="freeform" formaction="/freeform">Freeform</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="col-sm">
+          <div class="action-title">{{action}}</div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">V</th> 
+                <th scope="col">G</th> 
+                <th scope="col">A</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="{{v_style}}">{{choices['V']}}</td>
+                <td class="{{g_style}}">{{choices['G']}}</td>
+                <td class="{{a_style}}">{{choices['A']}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 

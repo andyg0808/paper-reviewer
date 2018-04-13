@@ -15,3 +15,8 @@ iframe {
   width: 960px;
   height: 15em;
 }
+
+.action-title {
+  font-weight: bold;
+  text-align: center;
+}
