@@ -10,8 +10,7 @@ acm_data['url'] = acm_data['id'].apply("https://dl.acm.org/citation.cfm?id={}&pr
 data['acm'] = acm_data
 
 mapping = pd.read_csv('Mapping.csv', skiprows=[1])
-mapping['paper_id'] = [x+1 for x in mapping.index]
-mapping.index = mapping['paper_id']
+mapping['paper_id'] = mapping.index
 output = pd.read_csv('output.csv')
 output = output.groupby('paper_id').last()
 mapping['G'] = output['action']
@@ -105,7 +104,7 @@ def process_choice(action, paper_id):
     csvfile, output = get_output(get_library())
     print(action + "ed " + paper_id)
     library = get_library()
-    doi = get_doi(library, paper_id)
+    doi = get_doi(library, int(paper_id))
     output.writerow([paper_id, action, doi])
     csvfile.flush()
     next_paper = str(int(request.form['paper_id'])+1)
