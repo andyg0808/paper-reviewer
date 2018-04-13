@@ -30,6 +30,9 @@ def get_template(key):
 def get_library():
     return request.cookies.get('library', 'ieee')
 
+@app.route("/library")
+def select_library():
+    return render_template('library.html')
 
 @app.route("/library/<libname>")
 def set_library(libname):
