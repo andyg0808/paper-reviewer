@@ -1,7 +1,12 @@
-function highlight_string(string) {
+function highlight_string(string, color) {
+  search = RegExp(string, 'gi')
+  replace = (text) =>
+    text.replace(search, m => 
+      `<span style="background-color: ${color};" class="highlight">${m}</span>`)
   abstract = document.getElementById('abstract')
-  text = abstract.innerHTML
-  abstract.innerHTML = text.replace(string, m => `<span class="highlight">${m}</span>`)
+  abstract.innerHTML = replace(abstract.innerHTML)
+  title = document.getElementById('title')
+  title.innerHTML = replace(title.innerHTML)
 }
 
 $(() => {
@@ -32,6 +37,10 @@ $(() => {
     }
   })
 
-  highlight_string('effort')
+  highlight_string('software', 'fuchsia')
+  highlight_string('effort', 'yellow')
+  highlight_string('estimation', 'chartreuse')
+  highlight_string('poker', 'blueviolet')
+  highlight_string('survey|mapping\\s+study|review', 'red')
 })
 
