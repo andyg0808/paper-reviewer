@@ -86,13 +86,12 @@ def show_paper(paper_id):
             g_style=style_choice(current_choices['G']),
             a_style=style_choice(current_choices['A']),
             action=request.cookies.get('action', 'filter')
-
             )
 
 def get_next_paper(paper_id):
     action = request.cookies.get('action', 'filter')
     if action == 'filter':
-        return paper_id + 1
+        return paper_id
     elif action == 'review':
         return mapping[mapping['review']].iloc[paper_id:].iloc[0]['paper_id']
     elif action == 'unify':
@@ -103,7 +102,7 @@ def process_choice(action, paper_id):
     print(action + "ed " + paper_id)
     output.writerow([paper_id, action])
     csvfile.flush()
-    next_paper = get_next_paper(int(request.form['paper_id']))
+    next_paper = str(int(request.form['paper_id'])+1)
     return redirect("/" + str(next_paper))
 
 @app.route("/include", methods=["POST"])
