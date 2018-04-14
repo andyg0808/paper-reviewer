@@ -47,6 +47,9 @@
               btn-outline-info
               {% endif %}
                 " title="Shortcut key: d" id="discuss" formaction="/discuss">Discuss</button>
+              {% if action != 'filter' %}
+              <a class="btn btn-outline-dark" href="/{{paper_id+1}}">Next</a>
+              {% endif %}
             </div>
             <div class="input-group">
               <input type="text" class="form-control" name="freeform" id="freeform-text">
@@ -58,7 +61,7 @@
         </div>
         <div class="col-sm">
         {% if action != 'filter' %}
-          <div class="action-title">{{action}}</div>
+        <div class="action-title">{{action}} - {{paper_idx}}</div>
           <table class="table">
             <thead>
               <tr>
