@@ -74,7 +74,12 @@ def show_paper(paper_id):
     print(template)
     res = data[key].iloc[paper_idx]
     current_choices = mapping[['V', 'G', 'A']].iloc[paper_idx]
-    if 'Abstract' in res:
+    action = request.cookies.get('action', 'filter')
+    if action != 'filter':
+        action_counts = current_choices.value_counts()
+        max_action = action_counts.index[0]
+        prediction = [x == max_action for x in ['include', 'exclude', 'discuss']]
+    elif 'Abstract' in res:
         prediction = predict.get_prediction(res['Abstract'])
     else:
         prediction = [False, False, False]
@@ -87,7 +92,7 @@ def show_paper(paper_id):
             v_style=style_choice(current_choices['V']),
             g_style=style_choice(current_choices['G']),
             a_style=style_choice(current_choices['A']),
-            action=request.cookies.get('action', 'filter'),
+            action=action,
             prediction=prediction
             )
 
