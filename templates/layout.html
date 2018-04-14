@@ -40,18 +40,18 @@
               btn-outline-danger
               {% endif %}
                 " title="Shortcut key: e" id="exclude" formaction="/exclude">Exclude</button>
-              <button class="btn btn-outline-info" title="Shortcut key: d" id="discuss" formaction="/discuss">Discuss</button>
+              <button class="btn 
+              {% if prediction[2] %}
+              btn-info
+              {% else %}
+              btn-outline-info
+              {% endif %}
+                " title="Shortcut key: d" id="discuss" formaction="/discuss">Discuss</button>
             </div>
             <div class="input-group">
               <input type="text" class="form-control" name="freeform" id="freeform-text">
               <div class="input-group-append">
-                <button class="btn 
-              {% if prediction[2] %}
-              btn-secondary
-              {% else %}
-              btn-outline-secondary
-              {% endif %}
-                  " title="Shortcut key: f" id="freeform" formaction="/freeform">Freeform</button>
+                <button class="btn btn-outline-secondary" title="Shortcut key: f" id="freeform" formaction="/freeform">Freeform</button>
               </div>
             </div>
           </form>
