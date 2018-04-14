@@ -43,5 +43,7 @@ $(() => {
   highlight_string(/poker/, 'blueviolet')
   highlight_string(/stud(y|ies)/, 'lightblue')
   highlight_string(/survey|mapping\s+study|review/, 'red')
+  highlight_string(/cost/, 'lightseagreen')
+  highlight_string(/size/, 'mediumspringgreen')
 })
 
