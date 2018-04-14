@@ -27,7 +27,7 @@ class Predictor:
                       loss='categorical_crossentropy',
                       metrics=['accuracy'])
 
-        self.model.fit(vectors[:len(cat_labels)], cat_labels, epochs=2)
+        self.model.fit(vectors[:len(cat_labels)], cat_labels, epochs=2, batch_size=10)
 
     def get_prediction(self, abstract):
         a = [abstract]
