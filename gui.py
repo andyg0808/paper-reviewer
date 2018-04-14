@@ -74,7 +74,10 @@ def show_paper(paper_id):
     print(template)
     res = data[key].iloc[paper_idx]
     current_choices = mapping[['V', 'G', 'A']].iloc[paper_idx]
-    prediction = predict.get_prediction(res['Abstract'])
+    if 'Abstract' in res:
+        prediction = predict.get_prediction(res['Abstract'])
+    else:
+        prediction = [False, False, False]
     return render_template(template, 
             paper_id=paper_id, 
             paper_idx=paper_idx,
