@@ -22,7 +22,7 @@ class Predictor:
 
         self.model = Sequential()
         self.model.add(Dense(150, input_shape=(vectors.shape[1],), activation='relu'))
-        self.model.add(Dense(150, activation='relu'))
+        self.model.add(Dense(50, activation='relu'))
         self.model.add(Dense(3, activation='softmax'))
         self.model.compile(optimizer='rmsprop',
                       loss='categorical_crossentropy',
