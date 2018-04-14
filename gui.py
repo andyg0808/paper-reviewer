@@ -1,6 +1,7 @@
 import csv
 import pandas as pd
 from flask import Flask, render_template, request, redirect, url_for, make_response
+import predictor
 app = Flask(__name__)
 
 data = {}
@@ -18,6 +19,7 @@ mapping['G'] = output['action']
 unifies = mapping.query('V!=G | V!=A | G!=A | V=="discuss"')
 reviews = mapping.query('V!=A & V==G & V!="discuss"')
 
+predict = predictor.Predictor(data['ieee']['Abstract'], output['action'])
 
 output_files = {
     'acm': 'output-acm.csv',
@@ -72,6 +74,7 @@ def show_paper(paper_id):
     print(template)
     res = data[key].iloc[paper_idx]
     current_choices = mapping[['V', 'G', 'A']].iloc[paper_idx]
+    prediction = predict.get_prediction(res['Abstract'])
     return render_template(template, 
             paper_id=paper_id, 
             paper_idx=paper_idx,
@@ -80,7 +83,8 @@ def show_paper(paper_id):
             v_style=style_choice(current_choices['V']),
             g_style=style_choice(current_choices['G']),
             a_style=style_choice(current_choices['A']),
-            action=request.cookies.get('action', 'filter')
+            action=request.cookies.get('action', 'filter'),
+            prediction=prediction
             )
 
 def get_paper_idx(paper_id):

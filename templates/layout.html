@@ -26,14 +26,32 @@
             <input type="hidden" name="paper_id" value="{{paper_id}}">
             <input type="hidden" name="paper_idx" value="{{paper_idx}}">
             <div class="form-group">
-              <button class="btn btn-outline-success" title="Shortcut key: i" id="include" formaction="/include">Include</button>
-              <button class="btn btn-outline-danger" title="Shortcut key: e" id="exclude" formaction="/exclude">Exclude</button>
+              <button class="btn 
+              {% if prediction[0] %}
+              btn-success
+              {% else %}
+              btn-outline-success
+              {% endif %}
+                " title="Shortcut key: i" id="include" formaction="/include">Include</button>
+              <button class="btn 
+              {% if prediction[1] %}
+              btn-danger
+              {% else %}
+              btn-outline-danger
+              {% endif %}
+                " title="Shortcut key: e" id="exclude" formaction="/exclude">Exclude</button>
               <button class="btn btn-outline-info" title="Shortcut key: d" id="discuss" formaction="/discuss">Discuss</button>
             </div>
             <div class="input-group">
               <input type="text" class="form-control" name="freeform" id="freeform-text">
               <div class="input-group-append">
-                <button class="btn btn-outline-secondary" title="Shortcut key: f" id="freeform" formaction="/freeform">Freeform</button>
+                <button class="btn 
+              {% if prediction[2] %}
+              btn-secondary
+              {% else %}
+              btn-outline-secondary
+              {% endif %}
+                  " title="Shortcut key: f" id="freeform" formaction="/freeform">Freeform</button>
               </div>
             </div>
           </form>
