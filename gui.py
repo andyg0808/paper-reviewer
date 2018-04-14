@@ -17,7 +17,7 @@ output = output.groupby('paper_id').last()
 mapping['G'] = output['action']
 
 unifies = mapping.query('V!=G | V!=A | G!=A | V=="discuss"')
-reviews = mapping.query('V!=A & V==G & V!="discuss"')
+reviews = mapping.query('V!=G & V==A & V!="discuss"')
 
 predict = predictor.Predictor(data['ieee']['Abstract'], output['action'])
 
