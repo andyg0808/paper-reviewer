@@ -10,9 +10,14 @@ acm_data = pd.read_csv("ACMDL201804116245225.csv")
 acm_data['url'] = acm_data['id'].apply("https://dl.acm.org/citation.cfm?id={}&preflayout=flat#abstract".format)
 data['acm'] = acm_data
 
+def read_output(filename):
+    return pd.read_csv(filename, header=None, names=['paper_id', 'action', 'DOI'])
+
 mapping = pd.read_csv('Mapping.csv', skiprows=[1])
 mapping['paper_id'] = mapping.index
 output = pd.read_csv('output.csv')
+review_output = read_output('review-output.csv')
+output = pd.concat((output, review_output))
 output = output.groupby('paper_id').last()
 mapping['G'] = output['action']
 
