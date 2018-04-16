@@ -9,6 +9,7 @@ pandas = "*"
 keras = "*"
 scikit-learn = "*"
 tensorflow = "*"
+gevent = "*"
 
 [dev-packages]
 
