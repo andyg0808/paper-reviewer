@@ -13,13 +13,13 @@ data['acm'] = acm_data
 def read_output(filename):
     return pd.read_csv(filename, header=None, names=['paper_id', 'action', 'DOI'])
 
-mapping = pd.read_csv('Mapping.csv', skiprows=[1])
+mapping = pd.read_csv('merged.csv')#, skiprows=[1])
 mapping['paper_id'] = mapping.index
 output = pd.read_csv('output.csv')
 review_output = read_output('review-output.csv')
 output = pd.concat((output, review_output))
 output = output.groupby('paper_id').last()
-mapping['G'] = output['action']
+#mapping['G'] = output['action']
 
 unifies = mapping.query('V!=G | V!=A | G!=A | V=="discuss"')
 reviews = mapping.query('V!=G & V==A & V!="discuss"')
