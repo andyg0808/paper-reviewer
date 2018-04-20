@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Lato|Merriweather" rel="stylesheet">
+
+    <title>
+      Paper Reviewer
+    </title>
+
+    <link rel="stylesheet" href="/static/style.css">
+
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          {{title}}
+          <a href="{{url}}">PDF</a>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm">
+          <form method="post">
+            <input type="hidden" name="paper_id" value="{{paper_id}}">
+            <div class="form-group">
+              <label for="paper_type">Paper Type</label>
+              <input type="input" id="paper_type" name="paper_type">
+            </div>
+            <div class="form-group">
+              <label for="res_type">Res Type</label>
+              <input type="input" id="res_type" name="res_type">
+            </div>
+            <div class="form-group">
+              <label for="tool">Tool</label>
+              <input type="input" id="tool" name="tool">
+            </div>
+            <div class="form-group">
+              <label for="model">Model</label>
+              <input type="input" id="model" name="model">
+            </div>
+            <div class="form-group">
+              <label for="measurement">Measurement</label>
+              <input type="input" id="measurement" name="measurement">
+            </div>
+            <div class="form-group">
+              <label for="notes">Notes</label>
+              <input type="input" id="notes" name="notes">
+            </div>
+            <button class="btn btn-info" title="" id="submit" formaction="/set_values">Submit</button>
+          </form>
+        </div>
+      </div>
+      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+
+      <script src="/static/paper.js"></script>
+  </body>
+</html>
