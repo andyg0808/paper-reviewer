@@ -2,15 +2,19 @@ import yaml
 
 
 class ConfigHandler:
-    def __init__(self, cache):
+    def __init__(self, cache=None):
         self.cache = cache
 
     def _fetch_config(self):
-        if not self.cache.has('config'):
+        if self.cache:
+            if not self.cache.has('config'):
+                with open('config.yml') as config:
+                    settings = yaml.load(config)
+                    self.cache.set('config', settings)
+            return self.cache.get('config')
+        else:
             with open('config.yml') as config:
-                settings = yaml.load(config)
-                self.cache.set('config', settings)
-        return self.cache.get('config')
+                return yaml.load(config)
 
     def get(self, *keys):
         config = self._fetch_config()
