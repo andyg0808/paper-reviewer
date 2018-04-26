@@ -26,27 +26,15 @@
             <input type="hidden" name="paper_id" value="{{paper_id}}">
             <input type="hidden" name="paper_idx" value="{{paper_idx}}">
             <div class="form-group">
+              {% for action in actions %}
               <button class="btn 
-              {% if prediction[0] %}
-              btn-success
+              {% if prediction[action['name']] %}
+              {{action['predicted']}}
               {% else %}
-              btn-outline-success
+              {{action['notPredicted']}}
               {% endif %}
-                " title="Shortcut key: i" id="include" formaction="/include">Include</button>
-              <button class="btn 
-              {% if prediction[1] %}
-              btn-danger
-              {% else %}
-              btn-outline-danger
-              {% endif %}
-                " title="Shortcut key: e" id="exclude" formaction="/exclude">Exclude</button>
-              <button class="btn 
-              {% if prediction[2] %}
-              btn-info
-              {% else %}
-              btn-outline-info
-              {% endif %}
-                " title="Shortcut key: d" id="discuss" formaction="/discuss">Discuss</button>
+              " title="Shortcut key: {{action['shortcut']}}" id="{{action['id']}}" formaction="/{{action['id']}}">{{action['name']}}</button>
+              {% endfor %}
               {% if action != 'filter' %}
               <a class="btn btn-outline-dark" href="/{{paper_id+1}}">Next</a>
               {% endif %}
@@ -65,16 +53,16 @@
           <table class="table">
             <thead>
               <tr>
-                <th scope="col">V</th> 
-                <th scope="col">G</th> 
-                <th scope="col">A</th>
+                {% for user in users %}
+                <th scope="col">{{user}}</th> 
+                {% endfor %}
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td class="{{v_style}}">{{choices['V']}}</td>
-                <td class="{{g_style}}">{{choices['G']}}</td>
-                <td class="{{a_style}}">{{choices['A']}}</td>
+                {% for user in users %}
+                <td class="{{styles[user]}}">{{choices[user]}}</td>
+                {% endfor %}
               </tr>
             </tbody>
           </table>

@@ -16,38 +16,26 @@
     </p>
   </div>
   <div class="col-sm">
+    {% if questions is iterable %}
     <strong>Research Questions</strong>
     <ul>
+      {% for question in questions %}
       <li>
-        What are the existing software effort estimation techniques? Is
-        it possible to categorize?
+        {{question}}
       </li>
-      <li>
-        According to the literature, what are the most popular
-        approaches to software estimation? Has popularity changed over
-        time? Can we draw a trend across time?
-      </li>
-      <li>
-        How have software developers used effort estimation?
-      </li>
-      <li>
-        Do available studies provide quantitative outcomes with respect
-        to effectiveness and accuracy of effort estimation techniques?
-      </li>
-      <li>
-        Do empirical studies report engineers’ perception and rationale
-        about effort estimation techniques?
-      </li>
+      {% endfor %}
     </ul>
+    {% endif %}
+    {% if criteria is iterable %}
     <strong>Inclusion/Exclusion Criteria</strong>
     <ul>
-      <li>Use the following reference databases, due to their relevance in software engineering: Inspec, Compendex, IEEE Xplore, and ACM Digital Library.</li>
-      <li>Include only peer-reviewed papers published in journals, conference proceedings, workshops, or magazines</li>
-      <li>Include only papers written in English and only those available electronically</li>
-      <li>Consider only primary studies; exclude secondary sources (ie. surveys)</li>
-      <li>Include both practical and theoretical (opinion) results</li>
-      <li>Exclude papers not on the topic of software effort estimation</li>
+      {% for criterion in criteria %}
+      <li>
+        {{criterion}}
+      </li>
+      {% endfor %}
     </ul>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

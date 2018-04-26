@@ -5,7 +5,7 @@ from keras.layers import Dense, Activation
 from keras.utils import to_categorical
 
 class Predictor:
-    def __init__(self, abstracts, action):
+    def __init__(self, abstracts, action, num_actions=3):
         self.vectorizer = TfidfVectorizer()
         self.vectorizer.fit_transform(abstracts)
         vectors = self.vectorizer.transform(abstracts)
@@ -18,7 +18,7 @@ class Predictor:
             else:
                 return 2
         labels = action.apply(rename)
-        cat_labels = to_categorical(labels)
+        cat_labels = to_categorical(labels, num_classes=num_actions)
 
         self.model = Sequential()
         self.model.add(Dense(150, input_shape=(vectors.shape[1],), activation='relu'))

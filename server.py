@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-import gevent.pywsgi
+from gevent.pywsgi import WSGIServer
 import gui
 
-server = gevent.wsgi.WSGIServer(('localhost', 5000), gui.app)
+server = WSGIServer(('localhost', 5000), gui.app)
 server.serve_forever()

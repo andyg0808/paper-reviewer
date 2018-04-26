@@ -1,6 +1,6 @@
 import csv
 import pandas as pd
-from flask import Flask, render_template, request, redirect, url_for, make_response
+from flask import Flask, render_template, request, redirect, url_for, make_response, jsonify
 import predictor
 from werkzeug.contrib.cache import SimpleCache
 from config_handler import ConfigHandler
@@ -26,7 +26,7 @@ def read_output(filename):
 # mapping = pd.read_csv('Mapping.csv', skiprows=[1])
 # mapping['paper_id'] = mapping.index
 users = config.get('users')
-mapping = pd.DataFrame(columns=users)
+mapping = None
 
 if config.has('output', 'ieee') and \
         Path(config.get('output', 'ieee')).exists():
@@ -92,10 +92,8 @@ def show_paper(paper_id):
     print(template)
     res = data[key].iloc[paper_idx]
     users = config.get('users')
-    if len(users) == 0:
+    if not mapping or len(users) == 0:
         current_choices = pd.DataFrame()
-    elif len(users) == 1:
-        current_choices = mapping[users[0]].iloc[paper_idx]
     else:
         current_choices = mapping[users].iloc[paper_idx]
     action = request.cookies.get('action', 'filter')
@@ -107,18 +105,27 @@ def show_paper(paper_id):
         prediction = predict.get_prediction(res['Abstract'])
     else:
         prediction = [False, False, False]
+    actions = config.get('actions')
+    print(actions)
+    prediction = {a['name']: p for a,p in zip(actions, prediction)}
     print(prediction)
     return render_template(template, 
             paper_id=paper_id, 
             paper_idx=paper_idx,
             data=res, 
+            users=users,
             choices=current_choices,
-            v_style=style_choice(current_choices['V']),
-            g_style=style_choice(current_choices['G']),
-            a_style=style_choice(current_choices['A']),
+            styles={user: style_choice(user) for user in users},
             action=action,
-            prediction=prediction
+            prediction=prediction,
+            actions=config.get('actions'),
+            questions=config.get('research_questions'),
+            criteria=config.get('criteria')
             )
+
+@app.route("/highlights")
+def highlight_list():
+    return jsonify(config.get('highlights'))
 
 def get_paper_idx(paper_id):
     action = request.cookies.get('action', 'filter')
