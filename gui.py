@@ -2,38 +2,51 @@ import csv
 import pandas as pd
 from flask import Flask, render_template, request, redirect, url_for, make_response
 import predictor
+from werkzeug.contrib.cache import SimpleCache
+from config_handler import ConfigHandler
+from pathlib import Path
+
+cache = SimpleCache()
+config = ConfigHandler(cache)
+
 app = Flask(__name__)
 
 data = {}
-data['ieee'] = pd.read_csv("IEEE-results--export2018.04.11-15.30.32.csv")
-acm_data = pd.read_csv("ACMDL201804116245225.csv")
-acm_data['url'] = acm_data['id'].apply("https://dl.acm.org/citation.cfm?id={}&preflayout=flat#abstract".format)
-data['acm'] = acm_data
+if config.has('input', 'ieee'):
+    data['ieee'] = pd.read_csv(config.get('input', 'ieee'))
+
+if config.has('input', 'acm'):
+    acm_data = pd.read_csv(config.get('input', 'ieee'))
+    acm_data['url'] = acm_data['id'].apply("https://dl.acm.org/citation.cfm?id={}&preflayout=flat#abstract".format)
+    data['acm'] = acm_data
 
 def read_output(filename):
     return pd.read_csv(filename, header=None, names=['paper_id', 'action', 'DOI'])
 
-mapping = pd.read_csv('Mapping.csv', skiprows=[1])
-mapping['paper_id'] = mapping.index
-output = pd.read_csv('output.csv')
-review_output = read_output('review-output.csv')
-output = pd.concat((output, review_output))
-output = output.groupby('paper_id').last()
-mapping['G'] = output['action']
+# mapping = pd.read_csv('Mapping.csv', skiprows=[1])
+# mapping['paper_id'] = mapping.index
+users = config.get('users')
+mapping = pd.DataFrame(columns=users)
 
-unifies = mapping.query('V!=G | V!=A | G!=A | V=="discuss"')
-reviews = mapping.query('V!=G & V==A & V!="discuss"')
+if config.has('output', 'ieee') and \
+        Path(config.get('output', 'ieee')).exists():
+    output = pd.read_csv(config.get('output', 'ieee'))
+    # review_output = read_output('review-output.csv')
+    # output = pd.concat((output, review_output))
+    output = output.groupby('paper_id').last()
+    # mapping['G'] = output['action']
 
-predict = predictor.Predictor(data['ieee']['Abstract'], output['action'])
+    # unifies = mapping.query('V!=G | V!=A | G!=A | V=="discuss"')
+    # reviews = mapping.query('V!=G & V==A & V!="discuss"')
 
-output_files = {
-    'acm': 'output-acm.csv',
-    'ieee': 'output.csv'
-}
+    predict = predictor.Predictor(data['ieee']['Abstract'], output['action'])
+else:
+    predict = None
+
 
 def get_output(key):
     action = request.cookies.get('action', 'filter')
-    outputfile = output_files[key]
+    outputfile = config.get('output', key)
     if action != 'filter':
         outputfile = action + '-' + outputfile
     csvfile = open(outputfile, "a")
@@ -78,13 +91,19 @@ def show_paper(paper_id):
     template = get_template(key)
     print(template)
     res = data[key].iloc[paper_idx]
-    current_choices = mapping[['V', 'G', 'A']].iloc[paper_idx]
+    users = config.get('users')
+    if len(users) == 0:
+        current_choices = pd.DataFrame()
+    elif len(users) == 1:
+        current_choices = mapping[users[0]].iloc[paper_idx]
+    else:
+        current_choices = mapping[users].iloc[paper_idx]
     action = request.cookies.get('action', 'filter')
     if action != 'filter':
         action_counts = current_choices.value_counts()
         max_action = action_counts.index[0]
         prediction = [x == max_action for x in ['include', 'exclude', 'discuss']]
-    elif 'Abstract' in res:
+    elif 'Abstract' in res and predict:
         prediction = predict.get_prediction(res['Abstract'])
     else:
         prediction = [False, False, False]
