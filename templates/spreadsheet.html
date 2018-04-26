@@ -19,39 +19,79 @@
     <div class="container">
       <div class="row">
         <div class="col">
-          {{title}}
+          <h2>{{title}}</h2>
+          <p>
           <a href="{{url}}">PDF</a>
+          </p>
         </div>
       </div>
       <div class="row">
         <div class="col-sm">
-          <form method="post">
-            <input type="hidden" name="paper_id" value="{{paper_id}}">
-            <div class="form-group">
-              <label for="paper_type">Paper Type</label>
-              <input type="input" id="paper_type" name="paper_type">
+          <form method="post" action="/set_values">
+            <input type="hidden" name="rowid" value="{{rowid}}">
+            <div class="row form-group">
+              <label class="col-form-label col-3">Paper Type</label>
+              <select class="custom-select col" name="paper_type">
+                {% for type in paper_types %}
+                <option value="{{type}}">{{type}}</option>
+                {% endfor %}
+              </select>
             </div>
-            <div class="form-group">
-              <label for="res_type">Res Type</label>
-              <input type="input" id="res_type" name="res_type">
+            <div class="row form-group">
+              <label class="col-form-label col-3">Res Type</label>
+              <select class="custom-select col" name="res_type">
+                {% for type in res_types %}
+                <option value="{{type}}">{{type}}</option>
+                {% endfor %}
+              </select>
             </div>
-            <div class="form-group">
-              <label for="tool">Tool</label>
-              <input type="input" id="tool" name="tool">
+            <div class="row form-group">
+              <label class="col-form-label col-3">Tool</label>
+              <select class="custom-select col" name="tool">
+                {% for tool in tools %}
+                <option value="{{tool}}">{{tool}}</option>
+                {% endfor %}
+              </select>
             </div>
-            <div class="form-group">
-              <label for="model">Model</label>
-              <input type="input" id="model" name="model">
+            <div class="row form-group">
+              <label class="col-form-label col-3">Model</label>
+              <select class="custom-select col" name="model">
+                {% for model in models %}
+                <option value="{{model}}">{{model}}</option>
+                {% endfor %}
+              </select>
             </div>
-            <div class="form-group">
-              <label for="measurement">Measurement</label>
-              <input type="input" id="measurement" name="measurement">
+            <div class="row form-group">
+              <label class="col-form-label col-3">Measurement</label>
+              <select class="custom-select col" name="measurement">
+                {% for measurement in measurements %}
+                <option value="{{measurement}}">{{measurement}}</option>
+                {% endfor %}
+              </select>
             </div>
-            <div class="form-group">
-              <label for="notes">Notes</label>
-              <input type="input" id="notes" name="notes">
+            <div class="row form-group">
+              <label class="col-form-label col-3" for="notes">Notes</label>
+              <input class="col" type="input" id="notes" name="notes">
             </div>
-            <button class="btn btn-info" title="" id="submit" formaction="/set_values">Submit</button>
+            <!--
+            <div class="row form-group">
+              <label class="col-form-label col-3" for="res_type">Res Type</label>
+              <input class="col" type="input" id="res_type" name="res_type">
+            </div>
+            <div class="row form-group">
+              <label class="col-form-label col-3" for="tool">Tool</label>
+              <input class="col" type="input" id="tool" name="tool">
+            </div>
+            <div class="row form-group">
+              <label class="col-form-label col-3" for="model">Model</label>
+              <input class="col" type="input" id="model" name="model">
+            </div>
+            <div class="row form-group">
+              <label class="col-form-label col-3" for="measurement">Measurement</label>
+              <input class="col" type="input" id="measurement" name="measurement">
+            </div>
+            -->
+            <button class="btn btn-info" type="submit" formaction="/set_values">Submit</button>
           </form>
         </div>
       </div>
