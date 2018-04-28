@@ -23,7 +23,17 @@ if config.has('input', 'acm'):
 
 
 def read_output(filename):
-    return pd.read_csv(filename, header=None, names=['paper_id', 'action', 'DOI'])
+    _data = pd.read_csv(filename, header=None,
+                        names=['paper_id', 'action', 'DOI'])
+    _data = _data[_data['paper_id'] != 'paper_id']
+    _data['paper_id'] = pd.to_numeric(_data['paper_id'])
+    _data = dedup_data(_data)
+    return _data
+
+
+def dedup_data(data):
+    return data.groupby('paper_id').last()
+
 
 # mapping = pd.read_csv('Mapping.csv', skiprows=[1])
 # mapping['paper_id'] = mapping.index
@@ -32,7 +42,7 @@ mapping = None
 
 if config.has('output', 'ieee') and \
         Path(config.get('output', 'ieee')).exists():
-    output = pd.read_csv(config.get('output', 'ieee'))
+    output = read_output(config.get('output', 'ieee'))
     # review_output = read_output('review-output.csv')
     # output = pd.concat((output, review_output))
     output = output.groupby('paper_id').last()
@@ -79,10 +89,10 @@ def select_library():
 @app.route("/library/<libname>")
 def set_library(libname):
     if libname == 'ieee':
-        resp = make_response(redirect('/0'))
+        resp = make_response(redirect(url_for('go_to_last')))
         resp.set_cookie('library', 'ieee')
     elif libname == 'acm':
-        resp = make_response(redirect('/0'))
+        resp = make_response(redirect(url_for('go_to_last')))
         resp.set_cookie('library', 'acm')
     return resp
 
@@ -124,6 +134,14 @@ def show_paper(paper_id):
             questions=config.get('research_questions'),
             criteria=config.get('criteria')
             )
+
+@app.route("/next")
+def go_to_last():
+    if output is not None and not output.empty:
+        last_id = output.index[-1]
+        return redirect('/' + str(last_id+1))
+    else:
+        return redirect('/0')
 
 @app.route("/highlights")
 def highlight_list():
