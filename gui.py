@@ -17,8 +17,10 @@ if config.has('input', 'ieee'):
 
 if config.has('input', 'acm'):
     acm_data = pd.read_csv(config.get('input', 'ieee'))
-    acm_data['url'] = acm_data['id'].apply("https://dl.acm.org/citation.cfm?id={}&preflayout=flat#abstract".format)
+    acm_data['url'] = acm_data['id'].apply(
+     "https://dl.acm.org/citation.cfm?id={}&preflayout=flat#abstract".format)
     data['acm'] = acm_data
+
 
 def read_output(filename):
     return pd.read_csv(filename, header=None, names=['paper_id', 'action', 'DOI'])
