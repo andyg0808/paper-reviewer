@@ -5,9 +5,17 @@ import predictor
 from werkzeug.contrib.cache import SimpleCache
 from config_handler import ConfigHandler
 from pathlib import Path
+from datastore import Datastore, PickledDatastore
 
-cache = SimpleCache()
-config = ConfigHandler(cache)
+config = ConfigHandler()
+
+if config.get('redis'):
+    cache = Datastore()
+    config = ConfigHandler(PickledDatastore(cache))
+else:
+    cache = SimpleCache()
+    config = ConfigHandler(cache)
+
 
 app = Flask(__name__)
 
@@ -40,20 +48,29 @@ def dedup_data(data):
 users = config.get('users')
 mapping = None
 
-if config.has('output', 'ieee') and \
-        Path(config.get('output', 'ieee')).exists():
-    output = read_output(config.get('output', 'ieee'))
-    # review_output = read_output('review-output.csv')
-    # output = pd.concat((output, review_output))
-    output = output.groupby('paper_id').last()
-    # mapping['G'] = output['action']
+def construct_predictor():
+    global output, predict
+    if config.has('output', 'ieee') and \
+            Path(config.get('output', 'ieee')).exists():
+        output = read_output(config.get('output', 'ieee'))
+        # review_output = read_output('review-output.csv')
+        # output = pd.concat((output, review_output))
+        output = output.groupby('paper_id').last()
+        # mapping['G'] = output['action']
 
-    # unifies = mapping.query('V!=G | V!=A | G!=A | V=="discuss"')
-    # reviews = mapping.query('V!=G & V==A & V!="discuss"')
+        # unifies = mapping.query('V!=G | V!=A | G!=A | V=="discuss"')
+        # reviews = mapping.query('V!=G & V==A & V!="discuss"')
 
-    predict = predictor.Predictor(data['ieee']['Abstract'], output['action'])
-else:
-    predict = None
+        predict = predictor.Predictor(data['ieee']['Abstract'], output['action'])
+    else:
+        predict = None
+
+def update_predictor(abstract, label):
+    global predict
+    if predict:
+        predict.update_predictor(abstract, label)
+
+construct_predictor()
 
 
 def get_output(key):
@@ -113,14 +130,28 @@ def show_paper(paper_id):
         action_counts = current_choices.value_counts()
         max_action = action_counts.index[0]
         prediction = [x == max_action for x in ['include', 'exclude', 'discuss']]
+        scores = None
     elif 'Abstract' in res and predict:
-        prediction = predict.get_prediction(res['Abstract'])
+        scores, prediction = predict.get_prediction(res['Abstract'])
     else:
+        scores = None
         prediction = [False, False, False]
     actions = config.get('actions')
     print(actions)
+    scores = {a['name']: p for a,p in zip(actions, scores)}
+    predicted_action = actions[prediction.index(True)]['id']
     prediction = {a['name']: p for a,p in zip(actions, prediction)}
-    print(prediction)
+    print(cache.has('predictions'))
+    cache.set('hi', 'hello')
+    if cache.has('correct_predictions'):
+        correct = cache.getl('correct_predictions', 50)
+        count = len(correct)
+        correct = map(int, correct)
+        average = sum(correct)/count
+    else:
+        average = None
+    print('Prediction', prediction)
+    print('Historical prediction accuracy', average)
     return render_template(template, 
             paper_id=paper_id, 
             paper_idx=paper_idx,
@@ -132,7 +163,10 @@ def show_paper(paper_id):
             prediction=prediction,
             actions=config.get('actions'),
             questions=config.get('research_questions'),
-            criteria=config.get('criteria')
+            criteria=config.get('criteria'),
+            predicted_action=predicted_action,
+            average=average,
+            scores=scores
             )
 
 @app.route("/next")
@@ -156,9 +190,28 @@ def get_paper_idx(paper_id):
     elif action == 'unify':
         return unifies.iloc[paper_id]['paper_id']
 
+
 def get_doi(library, paper_id):
     if library == 'ieee':
         return data[library].iloc[paper_id]['DOI']
+
+
+def get_abstract(library, paper_id):
+    if library == 'ieee':
+        return data[library].iloc[paper_id]['Abstract']
+
+
+def update_stats(action):
+    if config.get('redis'):
+        predicted_action = request.form['predicted_action']
+        if action == predicted_action:
+            cache.push('correct_predictions', 1)
+        else:
+            cache.push('correct_predictions', 0)
+        if cache.llen('correct_predictions') > 100:
+            cache.pop('correct_predictions')
+        cache.incr('predictions')
+
 
 def process_choice(action):
     paper_idx = request.form['paper_idx']
@@ -168,6 +221,9 @@ def process_choice(action):
     doi = get_doi(library, int(paper_idx))
     output.writerow([paper_idx, action, doi])
     csvfile.flush()
+    abstract = get_abstract(library, int(paper_idx))
+    update_predictor(abstract, action)
+    update_stats(action)
     next_paper = str(int(request.form['paper_id'])+1)
     return redirect("/" + str(next_paper))
 
@@ -186,3 +242,9 @@ def discuss_paper():
 @app.route("/freeform", methods=["POST"])
 def freeform_action():
     return process_choice(request.form['freeform'])
+
+@app.route("/reload")
+def reload():
+    cache.delete('config')
+    construct_predictor()
+    return redirect(url_for('go_to_last'))

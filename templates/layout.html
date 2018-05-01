@@ -25,15 +25,23 @@
           <form method="post">
             <input type="hidden" name="paper_id" value="{{paper_id}}">
             <input type="hidden" name="paper_idx" value="{{paper_idx}}">
+            <input type="hidden" name="predicted_action" value="{{predicted_action}}">
             <div class="form-group">
               {% for action in actions %}
-              <button class="btn 
-              {% if prediction[action['name']] %}
-              {{action['predicted']}}
-              {% else %}
-              {{action['notPredicted']}}
-              {% endif %}
-              " title="Shortcut key: {{action['shortcut']}}" id="{{action['id']}}" formaction="/{{action['id']}}">{{action['name']}}</button>
+                <button class="
+                btn 
+                {% if prediction[action['name']] %}
+                btn-{{action['class-type']}}
+                {% else %}
+                btn-outline-{{action['class-type']}}
+                {% endif %}
+                
+                " title="Shortcut key: {{action['shortcut']}}" id="{{action['id']}}" formaction="/{{action['id']}}">
+                  <div class="progress" style="height: 1px;">
+                    <div class="progress-bar bg-{{action['class-type']}}" style="width: {{scores[action['name']]*100}}%;"></div>
+                  </div>
+                  {{action['name']}}
+                </button>
               {% endfor %}
               {% if action != 'filter' %}
               <a class="btn btn-outline-dark" href="/{{paper_id+1}}">Next</a>
@@ -45,6 +53,14 @@
                 <button class="btn btn-outline-secondary" title="Shortcut key: f" id="freeform" formaction="/freeform">Freeform</button>
               </div>
             </div>
+            {% if average %}
+            <div>
+              <strong>Performance</strong>
+              <div class="progress" id="performance">
+                <div class="progress-bar" role="progressbar" style="width: {{average*100}}%"></div>
+              </div>
+            </div>
+            {% endif %}
           </form>
         </div>
         <div class="col-sm">

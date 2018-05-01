@@ -4,6 +4,12 @@ import yaml
 class ConfigHandler:
     def __init__(self, cache=None):
         self.cache = cache
+        if self.cache:
+            try:
+                self.cache.delete('config')
+            except AttributeError as e:
+                print("Ignoring ", e,
+                      " during attempt to delete config from cache")
 
     def _fetch_config(self):
         if self.cache:
