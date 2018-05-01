@@ -9,7 +9,7 @@ from datastore import Datastore, PickledDatastore
 
 config = ConfigHandler()
 
-if config.get('redis'):
+if config.has('redis') and config.get('redis'):
     cache = Datastore()
     config = ConfigHandler(PickledDatastore(cache))
 else:
