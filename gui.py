@@ -48,8 +48,9 @@ def dedup_data(data):
 users = config.get('users')
 mapping = None
 
-def construct_predictor():
-    global output, predict
+
+def fetch_output():
+    global output
     if config.has('output', 'ieee') and \
             Path(config.get('output', 'ieee')).exists():
         output = read_output(config.get('output', 'ieee'))
@@ -60,15 +61,25 @@ def construct_predictor():
 
         # unifies = mapping.query('V!=G | V!=A | G!=A | V=="discuss"')
         # reviews = mapping.query('V!=G & V==A & V!="discuss"')
+    else:
+        output = None
 
-        predict = predictor.Predictor(data['ieee']['Abstract'], output['action'])
+
+def construct_predictor():
+    global predict
+    fetch_output()
+    if output is not None:
+        predict = predictor.Predictor(data['ieee']['Abstract'],
+                                      output['action'])
     else:
         predict = None
+
 
 def update_predictor(abstract, label):
     global predict
     if predict:
         predict.update_predictor(abstract, label)
+
 
 construct_predictor()
 
@@ -247,4 +258,10 @@ def freeform_action():
 def reload():
     cache.delete('config')
     construct_predictor()
+    return redirect(url_for('go_to_last'))
+
+@app.route("/upconfig")
+def upconfig():
+    cache.delete('config')
+    fetch_output()
     return redirect(url_for('go_to_last'))
