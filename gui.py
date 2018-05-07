@@ -1,6 +1,7 @@
 import csv
 import pandas as pd
-from flask import Flask, render_template, request, redirect, url_for, make_response, jsonify
+from flask import Flask, render_template, request, redirect, url_for,\
+                  make_response, jsonify
 import predictor
 from werkzeug.contrib.cache import SimpleCache
 from config_handler import ConfigHandler
@@ -93,14 +94,17 @@ def get_output(key):
     output = csv.writer(csvfile)
     return csvfile, output
 
+
 def get_template(key):
     if key == 'ieee':
         return 'paper.html'
     elif key == 'acm':
         return 'acm.html'
 
+
 def get_library():
     return request.cookies.get('library', 'ieee')
+
 
 def style_choice(choice):
     if choice == 'include':
@@ -110,9 +114,11 @@ def style_choice(choice):
     elif choice == 'discuss':
         return 'table-info'
 
+
 @app.route("/library")
 def select_library():
     return render_template('library.html')
+
 
 @app.route("/library/<libname>")
 def set_library(libname):
@@ -123,6 +129,7 @@ def set_library(libname):
         resp = make_response(redirect(url_for('go_to_last')))
         resp.set_cookie('library', 'acm')
     return resp
+
 
 @app.route('/<int:paper_id>')
 def show_paper(paper_id):
@@ -140,7 +147,8 @@ def show_paper(paper_id):
     if action != 'filter':
         action_counts = current_choices.value_counts()
         max_action = action_counts.index[0]
-        prediction = [x == max_action for x in ['include', 'exclude', 'discuss']]
+        prediction = [x == max_action for x in
+                      ['include', 'exclude', 'discuss']]
         scores = None
     elif 'Abstract' in res and predict:
         scores, prediction = predict.get_prediction(res['Abstract'])
@@ -163,22 +171,23 @@ def show_paper(paper_id):
         average = None
     print('Prediction', prediction)
     print('Historical prediction accuracy', average)
-    return render_template(template, 
-            paper_id=paper_id, 
-            paper_idx=paper_idx,
-            data=res, 
-            users=users,
-            choices=current_choices,
-            styles={user: style_choice(user) for user in users},
-            action=action,
-            prediction=prediction,
-            actions=config.get('actions'),
-            questions=config.get('research_questions'),
-            criteria=config.get('criteria'),
-            predicted_action=predicted_action,
-            average=average,
-            scores=scores
-            )
+    return render_template(template,
+                           paper_id=paper_id,
+                           paper_idx=paper_idx,
+                           data=res,
+                           users=users,
+                           choices=current_choices,
+                           styles={user: style_choice(user) for user in users},
+                           action=action,
+                           prediction=prediction,
+                           actions=config.get('actions'),
+                           questions=config.get('research_questions'),
+                           criteria=config.get('criteria'),
+                           predicted_action=predicted_action,
+                           average=average,
+                           scores=scores
+                           )
+
 
 @app.route("/next")
 def go_to_last():
@@ -188,9 +197,11 @@ def go_to_last():
     else:
         return redirect('/0')
 
+
 @app.route("/highlights")
 def highlight_list():
     return jsonify(config.get('highlights'))
+
 
 def get_paper_idx(paper_id):
     action = request.cookies.get('action', 'filter')
@@ -238,27 +249,33 @@ def process_choice(action):
     next_paper = str(int(request.form['paper_id'])+1)
     return redirect("/" + str(next_paper))
 
+
 @app.route("/include", methods=["POST"])
 def include_paper():
     return process_choice('include')
+
 
 @app.route("/exclude", methods=["POST"])
 def exclude_paper():
     return process_choice('exclude')
 
+
 @app.route("/discuss", methods=["POST"])
 def discuss_paper():
     return process_choice('discuss')
 
+
 @app.route("/freeform", methods=["POST"])
 def freeform_action():
     return process_choice(request.form['freeform'])
+
 
 @app.route("/reload")
 def reload():
     cache.delete('config')
     construct_predictor()
     return redirect(url_for('go_to_last'))
+
 
 @app.route("/upconfig")
 def upconfig():
