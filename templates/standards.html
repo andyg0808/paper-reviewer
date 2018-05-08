@@ -1,0 +1,23 @@
+<div class="col-sm">
+  {% if questions is iterable %}
+  <strong>Research Questions</strong>
+  <ul>
+    {% for question in questions %}
+    <li>
+      {{question}}
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% if criteria is iterable %}
+  <strong>Inclusion/Exclusion Criteria</strong>
+  <ul>
+    {% for criterion in criteria %}
+    <li>
+      {{criterion}}
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>
+

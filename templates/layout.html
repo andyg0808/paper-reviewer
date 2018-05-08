@@ -37,9 +37,11 @@
                 {% endif %}
                 
                 " title="Shortcut key: {{action['shortcut']}}" id="{{action['id']}}" formaction="/{{action['id']}}">
+                  {% if scores %}
                   <div class="progress" style="height: 1px;">
-                    <div class="progress-bar bg-{{action['class-type']}}" style="width: {{scores[action['name']]*100}}%;"></div>
+                    <div class="progress-bar bg-{{action['class-type']}}" style="width: {{scores[action['id']]*100}}%;"></div>
                   </div>
+                  {% endif %}
                   {{action['name']}}
                 </button>
               {% endfor %}

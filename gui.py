@@ -25,9 +25,10 @@ if config.has('input', 'ieee'):
     data['ieee'] = pd.read_csv(config.get('input', 'ieee'))
 
 if config.has('input', 'acm'):
-    acm_data = pd.read_csv(config.get('input', 'ieee'))
+    acm_data = pd.read_csv(config.get('input', 'acm'))
     acm_data['url'] = acm_data['id'].apply(
      "https://dl.acm.org/citation.cfm?id={}&preflayout=flat#abstract".format)
+    acm_data['title'] = acm_data['title'].fillna(acm_data['booktitle'])
     data['acm'] = acm_data
 
 
@@ -157,9 +158,15 @@ def show_paper(paper_id):
         prediction = [False, False, False]
     actions = config.get('actions')
     print(actions)
-    scores = {a['name']: p for a,p in zip(actions, scores)}
-    predicted_action = actions[prediction.index(True)]['id']
-    prediction = {a['name']: p for a,p in zip(actions, prediction)}
+    if scores:
+        scores = {a['id']: p for a, p in zip(actions, scores)}
+    if prediction:
+        if True in prediction:
+            idx = prediction.index(True)
+            predicted_action = actions[idx]['id']
+        else:
+            predicted_action = None
+        prediction = {a['name']: p for a, p in zip(actions, prediction)}
     print(cache.has('predictions'))
     cache.set('hi', 'hello')
     if cache.has('correct_predictions'):
@@ -221,6 +228,8 @@ def get_doi(library, paper_id):
 def get_abstract(library, paper_id):
     if library == 'ieee':
         return data[library].iloc[paper_id]['Abstract']
+    else:
+        return None
 
 
 def update_stats(action):
@@ -244,7 +253,8 @@ def process_choice(action):
     output.writerow([paper_idx, action, doi])
     csvfile.flush()
     abstract = get_abstract(library, int(paper_idx))
-    update_predictor(abstract, action)
+    if abstract:
+        update_predictor(abstract, action)
     update_stats(action)
     next_paper = str(int(request.form['paper_id'])+1)
     return redirect("/" + str(next_paper))
