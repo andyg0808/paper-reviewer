@@ -158,7 +158,7 @@ def show_paper(paper_id):
         prediction = [False, False, False]
     actions = config.get('actions')
     print(actions)
-    if scores:
+    if scores is not None:
         scores = {a['id']: p for a, p in zip(actions, scores)}
     if prediction:
         if True in prediction:
